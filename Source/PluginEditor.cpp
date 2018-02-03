@@ -69,6 +69,10 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 
 	addAndMakeVisible(&delayWritePositionSlider_);
 
+	millisecondsLabel_.setFont(Font(28.0f, Font::bold));	
+	millisecondsLabel_.setText("0 ms", dontSendNotification);
+	addAndMakeVisible(&millisecondsLabel_);
+
 	startTimerHz(10);
 }
 
@@ -99,7 +103,9 @@ void NegativeDelayAudioProcessorEditor::resized()
 	delayWritePositionSlider_.setBounds(40, 90, 300, 20);
 
 	delayReadPositionLabel_.setBounds(40, 110, 300, 40);
-	delayReadPositionSlider_.setBounds(40, 150, 300, 20);	
+	delayReadPositionSlider_.setBounds(40, 150, 300, 20);
+
+	millisecondsLabel_.setBounds(40,170,300,40);
 }
 
 void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
@@ -108,7 +114,7 @@ void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
 		processor.setDelayTime((int)(delayTimeSlider_.getValue()));
 	if (slider == &negativeDelayTimeSlider_) 
 		delayTimeSlider_.setValue(processor.pluginLatency_-negativeDelayTimeSlider_.getValue());
-
+	millisecondsLabel_.setText("-"+String((negativeDelayTimeSlider_.getValue()/processor.getSampleRate()) * 1000)+" ms", dontSendNotification);
 }
 
 void NegativeDelayAudioProcessorEditor::timerCallback() {
