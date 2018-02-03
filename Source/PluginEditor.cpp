@@ -41,6 +41,24 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	addAndMakeVisible(&delayReadPositionLabel_);	
 	addAndMakeVisible(&delayWritePositionLabel_);
 
+	delayReadPositionSlider_.setSliderStyle(Slider::LinearHorizontal);
+	delayReadPositionSlider_.setRange(0.0, processor.getLatencySamples(), 1.0);
+	delayReadPositionSlider_.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);	
+	//delayReadPositionSlider_.setPopupDisplayEnabled(true, false, this);
+	//delayReadPositionSlider_.setTextValueSuffix(" Read Position");
+	delayReadPositionSlider_.setValue(0.0);
+
+	addAndMakeVisible(&delayReadPositionSlider_);
+
+	delayWritePositionSlider_.setSliderStyle(Slider::LinearHorizontal);
+	delayWritePositionSlider_.setRange(0.0, processor.getLatencySamples(), 1.0);
+	delayWritePositionSlider_.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);
+	//delayWritePositionSlider_.setPopupDisplayEnabled(true, false, this);
+	//delayWritePositionSlider_.setTextValueSuffix(" Write Position");
+	delayWritePositionSlider_.setValue(0.0);
+
+	addAndMakeVisible(&delayWritePositionSlider_);
+
 	startTimerHz(10);
 }
 
@@ -64,16 +82,24 @@ void NegativeDelayAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
 	delayTimeSlider_.setBounds(40, 30, 300, 20);
-	delayReadPositionLabel_.setBounds(40, 50, 300, 40);
-	delayWritePositionLabel_.setBounds(40, 90, 300, 40);
+
+	delayWritePositionLabel_.setBounds(40, 50, 300, 40);
+	delayWritePositionSlider_.setBounds(40, 90, 300, 20);
+
+	delayReadPositionLabel_.setBounds(40, 110, 300, 40);
+	delayReadPositionSlider_.setBounds(40, 150, 300, 20);	
 }
 
 void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
 {
-	processor.delayTime_ = delayTimeSlider_.getValue();	
+	if(slider == &delayTimeSlider_) // if the pointe slider is pointing at the memory address where delayTimeSlider_ is stored
+		processor.delayTime_ = delayTimeSlider_.getValue();	
 }
 
 void NegativeDelayAudioProcessorEditor::timerCallback() {
 	delayReadPositionLabel_.setText("dpr: " + String(processor.delayReadPosition_), dontSendNotification);
 	delayWritePositionLabel_.setText("dpw: " + String(processor.delayWritePosition_), dontSendNotification);
+
+	delayWritePositionSlider_.setValue(processor.delayWritePosition_);
+	delayReadPositionSlider_.setValue(processor.delayReadPosition_);
 }

@@ -39,5 +39,7 @@ private:
 	Slider delayTimeSlider_;
 	Label delayReadPositionLabel_;
 	Label delayWritePositionLabel_;
+	Slider delayReadPositionSlider_;
+	Slider delayWritePositionSlider_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NegativeDelayAudioProcessorEditor)
 };
