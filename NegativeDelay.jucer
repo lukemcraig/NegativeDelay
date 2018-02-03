@@ -10,8 +10,8 @@
               pluginCode="Srod" pluginChannelConfigs="" pluginIsSynth="0" pluginWantsMidiIn="0"
               pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="NegativeDelayAU" pluginRTASCategory=""
-              aaxIdentifier="com.LiminalSignals.NegativeDelay" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="5.2.0">
+              aaxIdentifier="com.LiminalSignals.NegativeDelay" pluginAAXCategory="AAX_ePlugInCategory_Delay"
+              jucerVersion="5.2.0" pluginVSTCategory="">
   <MAINGROUP id="tRGFKN" name="NegativeDelay">
     <GROUP id="{5601EA6C-98C4-89A4-CC8B-7D31A78397E6}" name="Source">
       <FILE id="hk4haj" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -24,7 +24,8 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <VS2017 targetFolder="Builds/VisualStudio2017" windowsTargetPlatformVersion="10.0.16299.0">
+    <VS2017 targetFolder="Builds/VisualStudio2017" windowsTargetPlatformVersion="10.0.16299.0"
+            aaxFolder="">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
                        debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"

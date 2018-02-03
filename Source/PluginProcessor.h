@@ -59,7 +59,7 @@ public:
 
 	void setDelayTime(int newDelayTime);
 
-	static const int pluginLatency_ = 200000;
+	static const int pluginLatency_ = 192000; //1 bar of 4/4 in 60BPM at 48kHz (4000ms)
 	double delayTime_;
 	int delayReadPosition_;
 	int delayWritePosition_;

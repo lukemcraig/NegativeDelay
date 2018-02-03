@@ -25,7 +25,7 @@ NegativeDelayAudioProcessor::NegativeDelayAudioProcessor()
                        )
 #endif
 {	
-	//setLatencySamples(pluginLatency_);
+	setLatencySamples(pluginLatency_);
 	delayReadPosition_ = 0;
 	delayWritePosition_ = 0;
 	delayTime_ = 0;

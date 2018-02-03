@@ -19,6 +19,20 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	setResizable(true,true);
 	// This is where our plugin’s editor size is set.
 	setSize(400, 400);
+	// these define the parameters of our slider object
+	negativeDelayTimeSlider_.setSliderStyle(Slider::LinearHorizontal);
+	//(double)NegativeDelayAudioProcessor::pluginLatency_
+	negativeDelayTimeSlider_.setRange(0.0, processor.pluginLatency_, 1.0);
+	negativeDelayTimeSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 90, negativeDelayTimeSlider_.getTextBoxHeight());
+	negativeDelayTimeSlider_.setPopupDisplayEnabled(true, false, this);
+	negativeDelayTimeSlider_.setTextValueSuffix(" Negative Delay Time");
+	negativeDelayTimeSlider_.setValue(0.0);
+
+	// this function adds the slider to the editor
+	addAndMakeVisible(&negativeDelayTimeSlider_);
+
+	// add the listener to the slider
+	negativeDelayTimeSlider_.addListener(this);
 
 	// these define the parameters of our slider object
 	delayTimeSlider_.setSliderStyle(Slider::LinearHorizontal);
@@ -44,8 +58,6 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	delayReadPositionSlider_.setSliderStyle(Slider::LinearHorizontal);
 	delayReadPositionSlider_.setRange(0.0, processor.pluginLatency_, 1.0);
 	delayReadPositionSlider_.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);	
-	//delayReadPositionSlider_.setPopupDisplayEnabled(true, false, this);
-	//delayReadPositionSlider_.setTextValueSuffix(" Read Position");
 	delayReadPositionSlider_.setValue(0.0);
 
 	addAndMakeVisible(&delayReadPositionSlider_);
@@ -53,8 +65,6 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	delayWritePositionSlider_.setSliderStyle(Slider::LinearHorizontal);
 	delayWritePositionSlider_.setRange(0.0, processor.pluginLatency_, 1.0);
 	delayWritePositionSlider_.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);
-	//delayWritePositionSlider_.setPopupDisplayEnabled(true, false, this);
-	//delayWritePositionSlider_.setTextValueSuffix(" Write Position");
 	delayWritePositionSlider_.setValue(0.0);
 
 	addAndMakeVisible(&delayWritePositionSlider_);
@@ -81,6 +91,8 @@ void NegativeDelayAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+	negativeDelayTimeSlider_.setBounds(40, 10, 300, 20);
+
 	delayTimeSlider_.setBounds(40, 30, 300, 20);
 
 	delayWritePositionLabel_.setBounds(40, 50, 300, 40);
@@ -92,8 +104,10 @@ void NegativeDelayAudioProcessorEditor::resized()
 
 void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
 {
-	if (slider == &delayTimeSlider_) // if the pointe slider is pointing at the memory address where delayTimeSlider_ is stored
+	if (slider == &delayTimeSlider_) // if the pointer slider is pointing at the memory address where delayTimeSlider_ is stored
 		processor.setDelayTime((int)(delayTimeSlider_.getValue()));
+	if (slider == &negativeDelayTimeSlider_) 
+		delayTimeSlider_.setValue(processor.pluginLatency_-negativeDelayTimeSlider_.getValue());
 
 }
 

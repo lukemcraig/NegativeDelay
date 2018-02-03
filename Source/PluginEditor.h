@@ -36,6 +36,7 @@ private:
     // access the processor object that created it.
     NegativeDelayAudioProcessor& processor;
 
+	Slider negativeDelayTimeSlider_;
 	Slider delayTimeSlider_;
 	Label delayReadPositionLabel_;
 	Label delayWritePositionLabel_;
