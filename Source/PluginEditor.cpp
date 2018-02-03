@@ -23,8 +23,8 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	// these define the parameters of our slider object
 	delayTimeSlider_.setSliderStyle(Slider::LinearHorizontal);
 	//(double)NegativeDelayAudioProcessor::pluginLatency_
-	delayTimeSlider_.setRange(0.0, processor.getLatencySamples(), 1.0);
-	delayTimeSlider_.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);
+	delayTimeSlider_.setRange(0.0, processor.pluginLatency_, 1.0);
+	delayTimeSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 90, delayTimeSlider_.getTextBoxHeight());
 	delayTimeSlider_.setPopupDisplayEnabled(true, false, this);
 	delayTimeSlider_.setTextValueSuffix(" Delay Time");
 	delayTimeSlider_.setValue(0.0);
@@ -42,7 +42,7 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	addAndMakeVisible(&delayWritePositionLabel_);
 
 	delayReadPositionSlider_.setSliderStyle(Slider::LinearHorizontal);
-	delayReadPositionSlider_.setRange(0.0, processor.getLatencySamples(), 1.0);
+	delayReadPositionSlider_.setRange(0.0, processor.pluginLatency_, 1.0);
 	delayReadPositionSlider_.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);	
 	//delayReadPositionSlider_.setPopupDisplayEnabled(true, false, this);
 	//delayReadPositionSlider_.setTextValueSuffix(" Read Position");
@@ -51,7 +51,7 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	addAndMakeVisible(&delayReadPositionSlider_);
 
 	delayWritePositionSlider_.setSliderStyle(Slider::LinearHorizontal);
-	delayWritePositionSlider_.setRange(0.0, processor.getLatencySamples(), 1.0);
+	delayWritePositionSlider_.setRange(0.0, processor.pluginLatency_, 1.0);
 	delayWritePositionSlider_.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);
 	//delayWritePositionSlider_.setPopupDisplayEnabled(true, false, this);
 	//delayWritePositionSlider_.setTextValueSuffix(" Write Position");
@@ -92,8 +92,9 @@ void NegativeDelayAudioProcessorEditor::resized()
 
 void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
 {
-	if(slider == &delayTimeSlider_) // if the pointe slider is pointing at the memory address where delayTimeSlider_ is stored
-		processor.delayTime_ = delayTimeSlider_.getValue();	
+	if (slider == &delayTimeSlider_) // if the pointe slider is pointing at the memory address where delayTimeSlider_ is stored
+		processor.setDelayTime((int)(delayTimeSlider_.getValue()));
+
 }
 
 void NegativeDelayAudioProcessorEditor::timerCallback() {

@@ -25,6 +25,7 @@ public:
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+	void setDelayReadPosition();
     void releaseResources() override;
 
    #ifndef JucePlugin_PreferredChannelConfigurations
@@ -56,7 +57,9 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-	static const int pluginLatency_ = 100000;
+	void setDelayTime(int newDelayTime);
+
+	static const int pluginLatency_ = 200000;
 	double delayTime_;
 	int delayReadPosition_;
 	int delayWritePosition_;

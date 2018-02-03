@@ -25,7 +25,7 @@ NegativeDelayAudioProcessor::NegativeDelayAudioProcessor()
                        )
 #endif
 {	
-	setLatencySamples(pluginLatency_);
+	//setLatencySamples(pluginLatency_);
 	delayReadPosition_ = 0;
 	delayWritePosition_ = 0;
 	delayTime_ = 0;
@@ -107,14 +107,19 @@ void NegativeDelayAudioProcessor::prepareToPlay (double sampleRate, int samplesP
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 	//delayBufferLength_ = (int)(2.0*sampleRate);
-	delayBufferLength_ = getLatencySamples();
+	delayBufferLength_ = pluginLatency_+1;
 	if (delayBufferLength_ < 1)
 		delayBufferLength_ = 1;
 
 	delayBuffer_.setSize(2, delayBufferLength_);
 	delayBuffer_.clear();
 
-	delayReadPosition_ = (int)(delayWritePosition_ - (int)(delayTime_) + delayBufferLength_) % delayBufferLength_;
+	setDelayReadPosition();
+}
+
+void NegativeDelayAudioProcessor::setDelayReadPosition()
+{
+	delayReadPosition_ = (int)(delayWritePosition_ - (int)(delayTime_)+delayBufferLength_) % delayBufferLength_;
 }
 
 void NegativeDelayAudioProcessor::releaseResources()
@@ -154,8 +159,6 @@ void NegativeDelayAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 	const int totalNumOutputChannels = getTotalNumOutputChannels();
 	const int numSamples = buffer.getNumSamples();
 
-	delayReadPosition_ = (int)(delayWritePosition_ - (int)(delayTime_) + delayBufferLength_) % delayBufferLength_;
-
 	int dpr; // delay pointer read
 	int dpw; // delay pointer write
 
@@ -168,19 +171,17 @@ void NegativeDelayAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 		dpw = delayWritePosition_;
 
 		for (int sample = 0; sample < numSamples; ++sample) {
-			const float in = channelData[sample];
-			float out = 0.0;
-			//y[n] = x[n - N]
-			// N : delay time in samples
-			delayData[dpw] = in;
+			// the input sample is written to delayData at the write pointer
+			delayData[dpw] = channelData[sample];
 
-			if (++dpr >= delayBufferLength_)
-				dpr = 0;
+			// the output sample is read from delayData at the read pointer
+			channelData[sample] = delayData[dpr];
+
+			// the read and write pointers are incremented
 			if (++dpw >= delayBufferLength_)
 				dpw = 0;
-
-			out = delayData[dpr];
-			channelData[sample] = out;
+			if (++dpr >= delayBufferLength_)
+				dpr = 0;
 		}
 	}
 	delayReadPosition_ = dpr;
@@ -214,6 +215,12 @@ void NegativeDelayAudioProcessor::setStateInformation (const void* data, int siz
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+void NegativeDelayAudioProcessor::setDelayTime(int newDelayTime)
+{
+	delayTime_ = newDelayTime;
+	setDelayReadPosition();
 }
 
 //==============================================================================
