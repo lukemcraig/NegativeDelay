@@ -24,8 +24,10 @@ NegativeDelayAudioProcessor::NegativeDelayAudioProcessor()
                      #endif
                        )
 #endif
-{
-	setLatencySamples(100000);
+{	
+	setLatencySamples(pluginLatency_);
+	delayReadPosition_ = 0;
+	delayWritePosition_ = 0;
 }
 
 NegativeDelayAudioProcessor::~NegativeDelayAudioProcessor()
@@ -103,6 +105,14 @@ void NegativeDelayAudioProcessor::prepareToPlay (double sampleRate, int samplesP
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+	delayBufferLength_ = (int)(2.0*sampleRate);
+	if (delayBufferLength_ < 1)
+		delayBufferLength_ = 1;
+
+	delayBuffer_.setSize(2, delayBufferLength_);
+	delayBuffer_.clear();
+
+	delayReadPosition_ = (int)(delayWritePosition_ - sampleRate + delayBufferLength_) % delayBufferLength_;
 }
 
 void NegativeDelayAudioProcessor::releaseResources()
@@ -137,27 +147,45 @@ bool NegativeDelayAudioProcessor::isBusesLayoutSupported (const BusesLayout& lay
 
 void NegativeDelayAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-    ScopedNoDenormals noDenormals;
-    const int totalNumInputChannels  = getTotalNumInputChannels();
-    const int totalNumOutputChannels = getTotalNumOutputChannels();
+	ScopedNoDenormals noDenormals;
+	const int totalNumInputChannels = getTotalNumInputChannels();
+	const int totalNumOutputChannels = getTotalNumOutputChannels();
+	const int numSamples = buffer.getNumSamples();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+	int dpr; // delay pointer read
+	int dpw; // delay pointer write
+			 // This is the place where you'd normally do the guts of your plugin's
+			 // audio processing...
+	for (int channel = 0; channel < totalNumInputChannels; ++channel)
+	{
+		float* channelData = buffer.getWritePointer(channel);
+		float* delayData = delayBuffer_.getWritePointer(channel);
+		// copy the variables so that the channels are independent
+		dpr = delayReadPosition_;
+		dpw = delayWritePosition_;
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        float* channelData = buffer.getWritePointer (channel);
+		for (int sample = 0; sample < numSamples; ++sample) {
+			const float in = channelData[sample];
+			float out = 0.0;
+			//y[n] = x[n - N]
+			// N : delay time
+			delayData[dpw] = in;
 
-        // ..do something to the data...
-    }
+			if (++dpr >= delayBufferLength_)
+				dpr = 0;
+			if (++dpw >= delayBufferLength_)
+				dpw = 0;
+
+			out = delayData[dpr];
+			channelData[sample] = out;
+		}
+	}
+	delayReadPosition_ = dpr;
+	delayWritePosition_ = dpw;
+
+	for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
+		buffer.clear(i, 0, buffer.getNumSamples());
+	}
 }
 
 //==============================================================================

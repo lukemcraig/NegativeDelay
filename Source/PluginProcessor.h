@@ -52,13 +52,18 @@ public:
     const String getProgramName (int index) override;
     void changeProgramName (int index, const String& newName) override;
 
-	//void setLatencySamples(int newLatency);
-
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+	static const int pluginLatency_ = 100000;
+	double delayTime_;
+
 private:
+	AudioSampleBuffer delayBuffer_;
+	int delayBufferLength_;
+	int delayReadPosition_;
+	int delayWritePosition_;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NegativeDelayAudioProcessor)
 };
