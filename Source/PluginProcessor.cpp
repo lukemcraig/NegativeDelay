@@ -29,6 +29,8 @@ NegativeDelayAudioProcessor::NegativeDelayAudioProcessor()
 	delayReadPosition_ = 0;
 	delayWritePosition_ = 0;
 	delayTime_ = 0;
+
+	lastPosInfo.resetToDefault();
 }
 
 NegativeDelayAudioProcessor::~NegativeDelayAudioProcessor()
@@ -190,6 +192,8 @@ void NegativeDelayAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 	for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
 		buffer.clear(i, 0, buffer.getNumSamples());
 	}
+
+	updateCurrentTimeInfoFromHost();
 }
 
 //==============================================================================
@@ -221,6 +225,23 @@ void NegativeDelayAudioProcessor::setDelayTime(int newDelayTime)
 {
 	delayTime_ = newDelayTime;
 	setDelayReadPosition();
+}
+
+void NegativeDelayAudioProcessor::updateCurrentTimeInfoFromHost()
+{
+	if (AudioPlayHead* audioPlayHead = getPlayHead())
+	{
+		AudioPlayHead::CurrentPositionInfo newTime;
+
+		if (audioPlayHead->getCurrentPosition(newTime)) 
+		{
+			lastPosInfo = newTime;  // Successfully got the current time from the host, so return
+			return;
+		}
+	}
+
+	// Otherwise, the host didn't supply a playhead so we set it to the default
+	lastPosInfo.resetToDefault();
 }
 
 //==============================================================================

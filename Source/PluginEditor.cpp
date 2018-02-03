@@ -73,6 +73,10 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	millisecondsLabel_.setText("0 ms", dontSendNotification);
 	addAndMakeVisible(&millisecondsLabel_);
 
+	bpmLabel_.setFont(Font(28.0f, Font::bold));
+	bpmLabel_.setText("bpm", dontSendNotification);
+	addAndMakeVisible(&bpmLabel_);
+
 	startTimerHz(10);
 }
 
@@ -106,6 +110,7 @@ void NegativeDelayAudioProcessorEditor::resized()
 	delayReadPositionSlider_.setBounds(40, 150, 300, 20);
 
 	millisecondsLabel_.setBounds(40,170,300,40);
+	bpmLabel_.setBounds(40, 210, 300, 40);
 }
 
 void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
@@ -123,4 +128,11 @@ void NegativeDelayAudioProcessorEditor::timerCallback() {
 
 	delayWritePositionSlider_.setValue(processor.delayWritePosition_);
 	delayReadPositionSlider_.setValue(processor.delayReadPosition_);
+
+	updateTimecodeDisplay(processor.lastPosInfo);
+}
+
+void NegativeDelayAudioProcessorEditor::updateTimecodeDisplay(AudioPlayHead::CurrentPositionInfo pos)
+{
+	bpmLabel_.setText(String(pos.bpm)+" bpm",dontSendNotification);
 }

@@ -64,7 +64,11 @@ public:
 	int delayReadPosition_;
 	int delayWritePosition_;
 
+	AudioPlayHead::CurrentPositionInfo lastPosInfo;
+
 private:
+	void updateCurrentTimeInfoFromHost();
+
 	AudioSampleBuffer delayBuffer_;
 	int delayBufferLength_;
 	
