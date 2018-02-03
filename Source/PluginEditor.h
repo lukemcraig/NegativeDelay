@@ -17,7 +17,7 @@
 //==============================================================================
 /**
 */
-class NegativeDelayAudioProcessorEditor  : public AudioProcessorEditor, private Slider::Listener	
+class NegativeDelayAudioProcessorEditor  : public AudioProcessorEditor, private Slider::Listener, private Timer
 {
 public:
     NegativeDelayAudioProcessorEditor (NegativeDelayAudioProcessor&);
@@ -27,6 +27,8 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 
+	void timerCallback() override;
+
 private:
 	void sliderValueChanged(Slider* slider) override;
 
@@ -35,6 +37,7 @@ private:
     NegativeDelayAudioProcessor& processor;
 
 	Slider delayTimeSlider_;
-
+	Label delayReadPositionLabel_;
+	Label delayWritePositionLabel_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NegativeDelayAudioProcessorEditor)
 };

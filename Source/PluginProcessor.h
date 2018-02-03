@@ -58,12 +58,13 @@ public:
 
 	static const int pluginLatency_ = 100000;
 	double delayTime_;
+	int delayReadPosition_;
+	int delayWritePosition_;
 
 private:
 	AudioSampleBuffer delayBuffer_;
 	int delayBufferLength_;
-	int delayReadPosition_;
-	int delayWritePosition_;
+	
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NegativeDelayAudioProcessor)
 };

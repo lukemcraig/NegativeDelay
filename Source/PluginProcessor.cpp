@@ -28,6 +28,7 @@ NegativeDelayAudioProcessor::NegativeDelayAudioProcessor()
 	setLatencySamples(pluginLatency_);
 	delayReadPosition_ = 0;
 	delayWritePosition_ = 0;
+	delayTime_ = 0;
 }
 
 NegativeDelayAudioProcessor::~NegativeDelayAudioProcessor()
@@ -105,14 +106,15 @@ void NegativeDelayAudioProcessor::prepareToPlay (double sampleRate, int samplesP
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-	delayBufferLength_ = (int)(2.0*sampleRate);
+	//delayBufferLength_ = (int)(2.0*sampleRate);
+	delayBufferLength_ = getLatencySamples();
 	if (delayBufferLength_ < 1)
 		delayBufferLength_ = 1;
 
 	delayBuffer_.setSize(2, delayBufferLength_);
 	delayBuffer_.clear();
 
-	delayReadPosition_ = (int)(delayWritePosition_ - sampleRate + delayBufferLength_) % delayBufferLength_;
+	delayReadPosition_ = (int)(delayWritePosition_ - (int)(delayTime_) + delayBufferLength_) % delayBufferLength_;
 }
 
 void NegativeDelayAudioProcessor::releaseResources()
@@ -152,10 +154,11 @@ void NegativeDelayAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 	const int totalNumOutputChannels = getTotalNumOutputChannels();
 	const int numSamples = buffer.getNumSamples();
 
+	delayReadPosition_ = (int)(delayWritePosition_ - (int)(delayTime_) + delayBufferLength_) % delayBufferLength_;
+
 	int dpr; // delay pointer read
 	int dpw; // delay pointer write
-			 // This is the place where you'd normally do the guts of your plugin's
-			 // audio processing...
+
 	for (int channel = 0; channel < totalNumInputChannels; ++channel)
 	{
 		float* channelData = buffer.getWritePointer(channel);
@@ -168,7 +171,7 @@ void NegativeDelayAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 			const float in = channelData[sample];
 			float out = 0.0;
 			//y[n] = x[n - N]
-			// N : delay time
+			// N : delay time in samples
 			delayData[dpw] = in;
 
 			if (++dpr >= delayBufferLength_)
