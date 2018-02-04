@@ -30,7 +30,7 @@ public:
 	void timerCallback() override;
 
 private:
-	void sliderValueChanged(Slider* slider) override; // what determines if an override is needed?
+	void sliderValueChanged(Slider* slider) override; 
 	void updateTimecodeDisplay(AudioPlayHead::CurrentPositionInfo);
 
     // This reference is provided as a quick way for your editor to
@@ -45,6 +45,7 @@ private:
 	Slider delayWritePositionSlider_;
 
 	Label millisecondsLabel_;
+	Slider millisecondsSlider_;
 	Label bpmLabel_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NegativeDelayAudioProcessorEditor)
 };

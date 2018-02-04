@@ -77,6 +77,17 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	bpmLabel_.setText("bpm", dontSendNotification);
 	addAndMakeVisible(&bpmLabel_);
 
+	millisecondsSlider_.setSliderStyle(Slider::LinearHorizontal);
+	millisecondsSlider_.setRange(0.0, (processor.pluginLatency_/processor.getSampleRate())*1000.0, 0.01);
+	millisecondsSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 90, millisecondsSlider_.getTextBoxHeight());
+	millisecondsSlider_.setTextValueSuffix(" ms");
+	millisecondsSlider_.setValue(0.0);
+
+	addAndMakeVisible(&millisecondsSlider_);
+
+	// add the listener to the slider
+	millisecondsSlider_.addListener(this);
+
 	startTimerHz(10);
 }
 
@@ -111,6 +122,8 @@ void NegativeDelayAudioProcessorEditor::resized()
 
 	millisecondsLabel_.setBounds(40,170,300,40);
 	bpmLabel_.setBounds(40, 210, 300, 40);
+
+	millisecondsSlider_.setBounds(40, 250, 300, 20);
 }
 
 void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
@@ -119,6 +132,8 @@ void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
 		processor.setDelayTime((int)(delayTimeSlider_.getValue()));
 	if (slider == &negativeDelayTimeSlider_) 
 		delayTimeSlider_.setValue(processor.pluginLatency_-negativeDelayTimeSlider_.getValue());
+	if (slider == &millisecondsSlider_)
+		negativeDelayTimeSlider_.setValue(millisecondsSlider_.getValue() * processor.getSampleRate()/1000.0);
 	millisecondsLabel_.setText("-"+String((negativeDelayTimeSlider_.getValue()/processor.getSampleRate()) * 1000)+" ms", dontSendNotification);
 }
 
