@@ -17,7 +17,7 @@
 //==============================================================================
 /**
 */
-class NegativeDelayAudioProcessorEditor  : public AudioProcessorEditor, private Slider::Listener, private Timer
+class NegativeDelayAudioProcessorEditor  : public AudioProcessorEditor, private Slider::Listener, private ComboBox::Listener, private Timer
 {
 public:
     NegativeDelayAudioProcessorEditor (NegativeDelayAudioProcessor&);
@@ -30,7 +30,8 @@ public:
 	void timerCallback() override;
 
 private:
-	void sliderValueChanged(Slider* slider) override; 
+	void sliderValueChanged(Slider* slider) override;
+	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override;
 	void updateTimecodeDisplay(AudioPlayHead::CurrentPositionInfo);
 
     // This reference is provided as a quick way for your editor to
@@ -47,5 +48,7 @@ private:
 	Label millisecondsLabel_;
 	Slider millisecondsSlider_;
 	Label bpmLabel_;
+
+	ComboBox noteDurationComboBox_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NegativeDelayAudioProcessorEditor)
 };

@@ -10,8 +10,6 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
-
 //==============================================================================
 NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDelayAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
@@ -88,6 +86,13 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	// add the listener to the slider
 	millisecondsSlider_.addListener(this);
 
+	noteDurationComboBox_.addItem("1/8", 8);
+	noteDurationComboBox_.addItem("1/4", 4);
+	noteDurationComboBox_.addItem("1/2", 2);
+	noteDurationComboBox_.addItem("1", 1);
+	addAndMakeVisible(&noteDurationComboBox_);
+	noteDurationComboBox_.addListener(this);
+
 	startTimerHz(10);
 }
 
@@ -124,6 +129,19 @@ void NegativeDelayAudioProcessorEditor::resized()
 	bpmLabel_.setBounds(40, 210, 300, 40);
 
 	millisecondsSlider_.setBounds(40, 250, 300, 20);
+
+	noteDurationComboBox_.setBounds(40, 270, 300, 20);
+}
+
+void NegativeDelayAudioProcessorEditor::comboBoxChanged(ComboBox* comboBox)
+{	
+	if (comboBox == &noteDurationComboBox_) {
+		double beatInMS = 60000.0 / processor.lastPosInfo.bpm;
+		int denominator = comboBox->getSelectedId();
+		double selectedDuration = 1.0 / denominator;
+		double ms = (selectedDuration * 4.0) * beatInMS;
+		millisecondsSlider_.setValue(ms);
+	}
 }
 
 void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
