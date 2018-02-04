@@ -19,7 +19,6 @@
 */
 class NegativeDelayAudioProcessorEditor  : public AudioProcessorEditor, 
 	private Slider::Listener, 
-	private ComboBox::Listener, 
 	private Button::Listener,
 	private Timer
 {
@@ -35,10 +34,10 @@ public:
 
 private:
 	void sliderValueChanged(Slider* slider) override;
-	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override;
+
 	void buttonClicked(Button* button) override;
 	
-
+	void noteDurationToMS(juce::String &selectedText);
 	void updateTimecodeDisplay(AudioPlayHead::CurrentPositionInfo);
 	void initializeNoteDurationHashMap();
 	void createDurationMenu();
@@ -57,15 +56,13 @@ private:
 	Slider millisecondsSlider_;
 	Label bpmLabel_;
 
-	ComboBox noteDurationComboBox_;
 	HashMap<String, double> noteDurationHashMap_;
-
+	HashMap<int, String> noteDurationIntHashMap_;
 	TextButton durationButton_;
 
 	PopupMenu durationMenu_;
 
-
-	static void testcallback(int result, int blank);
+	static void durationMenuCallBack(int result, NegativeDelayAudioProcessorEditor* editor);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NegativeDelayAudioProcessorEditor)
 };

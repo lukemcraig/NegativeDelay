@@ -88,14 +88,8 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	millisecondsSlider_.addListener(this);
 
 	initializeNoteDurationHashMap();
-	int j = 0;
-	for (HashMap<String, double>::Iterator i(noteDurationHashMap_); i.next();)
-		noteDurationComboBox_.addItem(i.getKey(), ++j);
 
 	createDurationMenu();
-
-	addAndMakeVisible(&noteDurationComboBox_);
-	noteDurationComboBox_.addListener(this);
 
 	durationButton_.setButtonText("Note Durations");
 	durationButton_.setTriggeredOnMouseDown(true);
@@ -111,11 +105,13 @@ NegativeDelayAudioProcessorEditor::~NegativeDelayAudioProcessorEditor()
 }
 
 //==============================================================================
-void NegativeDelayAudioProcessorEditor::testcallback(int result, int blank)
+void NegativeDelayAudioProcessorEditor::durationMenuCallBack(int result, NegativeDelayAudioProcessorEditor* editor)//HashMap<int, String> * noteDurationIntHashMap)
 {
 
 		if (result != 0) {
-			DBG(result);			
+			String selectedDurationString = editor->noteDurationIntHashMap_.operator[](result);
+			editor->durationButton_.setButtonText(selectedDurationString);
+			editor->noteDurationToMS(selectedDurationString);
 		}
 
 }
@@ -124,13 +120,12 @@ void NegativeDelayAudioProcessorEditor::buttonClicked(Button* button)
 {
 	if (button = &durationButton_) {
 		durationMenu_.showMenuAsync(PopupMenu::Options().withTargetComponent(&durationButton_),
-										ModalCallbackFunction::create(testcallback, 0));
+										ModalCallbackFunction::create(durationMenuCallBack, this));
 	}
 }
 
 void NegativeDelayAudioProcessorEditor::createDurationMenu()
 {
-
 	PopupMenu straightSubMenu;
 	straightSubMenu.addItem(1, "1/64");
 	straightSubMenu.addItem(2, "1/32");
@@ -179,6 +174,27 @@ void NegativeDelayAudioProcessorEditor::initializeNoteDurationHashMap() {
 	noteDurationHashMap_.set("1/2 D", 0.5);
 	noteDurationHashMap_.set("1 Bar T", 2.0 /3.0);
 	noteDurationHashMap_.set("1 Bar", 1.0);
+
+	noteDurationIntHashMap_.set(1, "1/64");
+	noteDurationIntHashMap_.set(2, "1/32");
+	noteDurationIntHashMap_.set(3, "1/16");
+	noteDurationIntHashMap_.set(4, "1/8");
+	noteDurationIntHashMap_.set(5, "1/4");
+	noteDurationIntHashMap_.set(6, "1/2");
+	noteDurationIntHashMap_.set(7, "1 Bar");
+	noteDurationIntHashMap_.set(8, "1/64 T");
+	noteDurationIntHashMap_.set(9, "1/32 T");
+	noteDurationIntHashMap_.set(10, "1/16 T");
+	noteDurationIntHashMap_.set(11, "1/8 T");
+	noteDurationIntHashMap_.set(12, "1/4 T");
+	noteDurationIntHashMap_.set(13, "1/2 T");
+	noteDurationIntHashMap_.set(14, "1 Bar T");
+	noteDurationIntHashMap_.set(15, "1/64 D");
+	noteDurationIntHashMap_.set(16, "1/32 D");
+	noteDurationIntHashMap_.set(17, "1/16 D");
+	noteDurationIntHashMap_.set(18, "1/8 D");
+	noteDurationIntHashMap_.set(19, "1/4 D");
+	noteDurationIntHashMap_.set(20, "1/2 D");
 }
 
 void NegativeDelayAudioProcessorEditor::paint (Graphics& g)
@@ -208,24 +224,17 @@ void NegativeDelayAudioProcessorEditor::resized()
 	millisecondsLabel_.setBounds(40,170,300,40);
 	bpmLabel_.setBounds(40, 210, 300, 40);
 
-	millisecondsSlider_.setBounds(40, 250, 300, 20);
-
-	noteDurationComboBox_.setBounds(40, 270, 300, 20);
+	millisecondsSlider_.setBounds(40, 250, 300, 20);	
 
 	durationButton_.setBounds(40, 290, 300, 20);
 }
 
-void NegativeDelayAudioProcessorEditor::comboBoxChanged(ComboBox* comboBox)
-{	
-	if (comboBox == &noteDurationComboBox_) {
-		double barInMS = 240000.0 / processor.lastPosInfo.bpm;
-		String selectedText = comboBox->getText();
-		//int denominator = comboBox->getSelectedId();
-		//double selectedDuration = 1.0 / denominator;
-		double selectedDuration = noteDurationHashMap_.operator[](selectedText);
-		double ms = selectedDuration * barInMS;
-		millisecondsSlider_.setValue(ms);
-	}
+void NegativeDelayAudioProcessorEditor::noteDurationToMS(juce::String &selectedText)
+{
+	double barInMS = 240000.0 / processor.lastPosInfo.bpm;
+	double selectedDuration = noteDurationHashMap_.operator[](selectedText);
+	double ms = selectedDuration * barInMS;
+	millisecondsSlider_.setValue(ms);
 }
 
 void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
