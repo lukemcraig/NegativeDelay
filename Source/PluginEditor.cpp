@@ -14,6 +14,7 @@
 NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDelayAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
+
 	setResizable(true,true);
 	// This is where our plugin’s editor size is set.
 	setSize(400, 400);
@@ -94,14 +95,39 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	addAndMakeVisible(&noteDurationComboBox_);
 	noteDurationComboBox_.addListener(this);
 
+	durationButton_.setButtonText("Note Durations");
+	durationButton_.setTriggeredOnMouseDown(true);
+	durationButton_.addListener(this);
+	addAndMakeVisible(durationButton_);
+
 	startTimerHz(10);
 }
 
 NegativeDelayAudioProcessorEditor::~NegativeDelayAudioProcessorEditor()
 {
+	
 }
 
 //==============================================================================
+void NegativeDelayAudioProcessorEditor::testcallback(int result, Slider* slider)
+{
+	if (slider != nullptr)
+	{
+		if (result != 0)
+			//slider->setSelectedId(result);
+			DBG(result);
+	}
+}
+
+void NegativeDelayAudioProcessorEditor::buttonClicked(Button* button)
+{
+	if (button = &durationButton_) {
+		getDurationMenu().showMenuAsync(PopupMenu::Options().withTargetComponent(&durationButton_),
+										ModalCallbackFunction::forComponent(testcallback, &millisecondsSlider_));
+	}
+}
+
+
 void NegativeDelayAudioProcessorEditor::initializeNoteDurationHashMap() {
 	noteDurationHashMap_.set("1/64 T", 1.0 / 96.0);
 	noteDurationHashMap_.set("1/64", 0.015625);
@@ -150,6 +176,8 @@ void NegativeDelayAudioProcessorEditor::resized()
 	millisecondsSlider_.setBounds(40, 250, 300, 20);
 
 	noteDurationComboBox_.setBounds(40, 270, 300, 20);
+
+	durationButton_.setBounds(40, 290, 300, 20);
 }
 
 void NegativeDelayAudioProcessorEditor::comboBoxChanged(ComboBox* comboBox)
