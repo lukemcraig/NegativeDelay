@@ -32,7 +32,9 @@ public:
 private:
 	void sliderValueChanged(Slider* slider) override;
 	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override;
+
 	void updateTimecodeDisplay(AudioPlayHead::CurrentPositionInfo);
+	void initializeNoteDurationHashMap();
 
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
@@ -50,5 +52,6 @@ private:
 	Label bpmLabel_;
 
 	ComboBox noteDurationComboBox_;
+	HashMap<String, double> noteDurationHashMap_;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NegativeDelayAudioProcessorEditor)
 };

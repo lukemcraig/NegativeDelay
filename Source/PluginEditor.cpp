@@ -86,10 +86,11 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	// add the listener to the slider
 	millisecondsSlider_.addListener(this);
 
-	noteDurationComboBox_.addItem("1/8", 8);
-	noteDurationComboBox_.addItem("1/4", 4);
-	noteDurationComboBox_.addItem("1/2", 2);
-	noteDurationComboBox_.addItem("1", 1);
+	initializeNoteDurationHashMap();
+	int j = 0;
+	for (HashMap<String, double>::Iterator i(noteDurationHashMap_); i.next();)
+		noteDurationComboBox_.addItem(i.getKey(), ++j);
+
 	addAndMakeVisible(&noteDurationComboBox_);
 	noteDurationComboBox_.addListener(this);
 
@@ -101,6 +102,24 @@ NegativeDelayAudioProcessorEditor::~NegativeDelayAudioProcessorEditor()
 }
 
 //==============================================================================
+void NegativeDelayAudioProcessorEditor::initializeNoteDurationHashMap() {
+	noteDurationHashMap_.set("1/64 T", 1.0 / 96.0);
+	noteDurationHashMap_.set("1/64", 0.015625);
+	noteDurationHashMap_.set("1/32 T", 1.0 / 48.0);
+	noteDurationHashMap_.set("1/32", 0.03125);
+	noteDurationHashMap_.set("1/16 T", 1.0/24.0);
+	noteDurationHashMap_.set("1/16", 0.0625);
+	noteDurationHashMap_.set("1/8 T", 1.0 /12.0);
+	noteDurationHashMap_.set("1/8", 0.125);
+	noteDurationHashMap_.set("1/4 T", 1.0 /6.0);
+	noteDurationHashMap_.set("1/4", 0.25);
+	noteDurationHashMap_.set("1/2 T", 1.0 /3.0);
+	noteDurationHashMap_.set("1/2", 0.5);
+	noteDurationHashMap_.set("1/2 D", 0.5);
+	noteDurationHashMap_.set("1 Bar T", 2.0 /3.0);
+	noteDurationHashMap_.set("1 Bar", 1.0);
+}
+
 void NegativeDelayAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
@@ -136,10 +155,12 @@ void NegativeDelayAudioProcessorEditor::resized()
 void NegativeDelayAudioProcessorEditor::comboBoxChanged(ComboBox* comboBox)
 {	
 	if (comboBox == &noteDurationComboBox_) {
-		double beatInMS = 60000.0 / processor.lastPosInfo.bpm;
-		int denominator = comboBox->getSelectedId();
-		double selectedDuration = 1.0 / denominator;
-		double ms = (selectedDuration * 4.0) * beatInMS;
+		double barInMS = 240000.0 / processor.lastPosInfo.bpm;
+		String selectedText = comboBox->getText();
+		//int denominator = comboBox->getSelectedId();
+		//double selectedDuration = 1.0 / denominator;
+		double selectedDuration = noteDurationHashMap_.operator[](selectedText);
+		double ms = selectedDuration * barInMS;
 		millisecondsSlider_.setValue(ms);
 	}
 }
