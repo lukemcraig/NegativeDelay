@@ -161,17 +161,22 @@ void NegativeDelayAudioProcessorEditor::createDurationMenu()
 void NegativeDelayAudioProcessorEditor::initializeNoteDurationHashMap() {
 	noteDurationHashMap_.set("1/64 T", 1.0 / 96.0);
 	noteDurationHashMap_.set("1/64", 0.015625);
+	noteDurationHashMap_.set("1/64 D", 0.0234375);
 	noteDurationHashMap_.set("1/32 T", 1.0 / 48.0);
 	noteDurationHashMap_.set("1/32", 0.03125);
+	noteDurationHashMap_.set("1/32 D", 0.046875);
 	noteDurationHashMap_.set("1/16 T", 1.0/24.0);
 	noteDurationHashMap_.set("1/16", 0.0625);
+	noteDurationHashMap_.set("1/16 D", 0.09375);
 	noteDurationHashMap_.set("1/8 T", 1.0 /12.0);
 	noteDurationHashMap_.set("1/8", 0.125);
+	noteDurationHashMap_.set("1/8 D", 0.1875);
 	noteDurationHashMap_.set("1/4 T", 1.0 /6.0);
 	noteDurationHashMap_.set("1/4", 0.25);
+	noteDurationHashMap_.set("1/4 D", 0.375);
 	noteDurationHashMap_.set("1/2 T", 1.0 /3.0);
 	noteDurationHashMap_.set("1/2", 0.5);
-	noteDurationHashMap_.set("1/2 D", 0.5);
+	noteDurationHashMap_.set("1/2 D", 0.75);
 	noteDurationHashMap_.set("1 Bar T", 2.0 /3.0);
 	noteDurationHashMap_.set("1 Bar", 1.0);
 
