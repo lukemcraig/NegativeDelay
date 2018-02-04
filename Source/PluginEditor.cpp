@@ -92,6 +92,8 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	for (HashMap<String, double>::Iterator i(noteDurationHashMap_); i.next();)
 		noteDurationComboBox_.addItem(i.getKey(), ++j);
 
+	createDurationMenu();
+
 	addAndMakeVisible(&noteDurationComboBox_);
 	noteDurationComboBox_.addListener(this);
 
@@ -109,24 +111,57 @@ NegativeDelayAudioProcessorEditor::~NegativeDelayAudioProcessorEditor()
 }
 
 //==============================================================================
-void NegativeDelayAudioProcessorEditor::testcallback(int result, Slider* slider)
+void NegativeDelayAudioProcessorEditor::testcallback(int result, int blank)
 {
-	if (slider != nullptr)
-	{
-		if (result != 0)
-			//slider->setSelectedId(result);
-			DBG(result);
-	}
+
+		if (result != 0) {
+			DBG(result);			
+		}
+
 }
 
 void NegativeDelayAudioProcessorEditor::buttonClicked(Button* button)
 {
 	if (button = &durationButton_) {
-		getDurationMenu().showMenuAsync(PopupMenu::Options().withTargetComponent(&durationButton_),
-										ModalCallbackFunction::forComponent(testcallback, &millisecondsSlider_));
+		durationMenu_.showMenuAsync(PopupMenu::Options().withTargetComponent(&durationButton_),
+										ModalCallbackFunction::create(testcallback, 0));
 	}
 }
 
+void NegativeDelayAudioProcessorEditor::createDurationMenu()
+{
+
+	PopupMenu straightSubMenu;
+	straightSubMenu.addItem(1, "1/64");
+	straightSubMenu.addItem(2, "1/32");
+	straightSubMenu.addItem(3, "1/16");
+	straightSubMenu.addItem(4, "1/8");
+	straightSubMenu.addItem(5, "1/4");
+	straightSubMenu.addItem(6, "1/2");
+	straightSubMenu.addItem(7, "1 Bar");
+	durationMenu_.addSubMenu("Straight", straightSubMenu);
+
+	PopupMenu tripletSubMenu;
+	tripletSubMenu.addItem(8, "1/64 T");
+	tripletSubMenu.addItem(9, "1/32 T");
+	tripletSubMenu.addItem(10, "1/16 T");
+	tripletSubMenu.addItem(11, "1/8 T");
+	tripletSubMenu.addItem(12, "1/4 T");
+	tripletSubMenu.addItem(13, "1/2 T");
+	tripletSubMenu.addItem(14, "1 Bar T");
+	durationMenu_.addSubMenu("Triplet", tripletSubMenu);
+
+	PopupMenu dottedSubMenu;
+	dottedSubMenu.addItem(15, "1/64 D");
+	dottedSubMenu.addItem(16, "1/32 D");
+	dottedSubMenu.addItem(17, "1/16 D");
+	dottedSubMenu.addItem(18, "1/8 D");
+	dottedSubMenu.addItem(19, "1/4 D");
+	dottedSubMenu.addItem(20, "1/2 D");
+	durationMenu_.addSubMenu("Dotted", dottedSubMenu);
+
+	
+}
 
 void NegativeDelayAudioProcessorEditor::initializeNoteDurationHashMap() {
 	noteDurationHashMap_.set("1/64 T", 1.0 / 96.0);

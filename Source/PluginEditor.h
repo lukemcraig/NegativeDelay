@@ -41,7 +41,7 @@ private:
 
 	void updateTimecodeDisplay(AudioPlayHead::CurrentPositionInfo);
 	void initializeNoteDurationHashMap();
-
+	void createDurationMenu();
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     NegativeDelayAudioProcessor& processor;
@@ -62,44 +62,10 @@ private:
 
 	TextButton durationButton_;
 
-	PopupMenu getDurationMenu()
-	{
+	PopupMenu durationMenu_;
 
-		PopupMenu durationMenu;
 
-		PopupMenu straightSubMenu;
-		straightSubMenu.addItem(1, "1/64");
-		straightSubMenu.addItem(2, "1/32");
-		straightSubMenu.addItem(3, "1/16");
-		straightSubMenu.addItem(4, "1/8");
-		straightSubMenu.addItem(5, "1/4");
-		straightSubMenu.addItem(6, "1/2");
-		straightSubMenu.addItem(7, "1 Bar");
-		durationMenu.addSubMenu("Straight", straightSubMenu);
-		
-		PopupMenu tripletSubMenu;
-		tripletSubMenu.addItem(1, "1/64 T");
-		tripletSubMenu.addItem(2, "1/32 T");
-		tripletSubMenu.addItem(3, "1/16 T");
-		tripletSubMenu.addItem(4, "1/8 T");
-		tripletSubMenu.addItem(5, "1/4 T");
-		tripletSubMenu.addItem(6, "1/2 T");
-		tripletSubMenu.addItem(7, "1 Bar T");
-		durationMenu.addSubMenu("Triplet", tripletSubMenu);
-
-		PopupMenu dottedSubMenu;
-		dottedSubMenu.addItem(1, "1/64 D");
-		dottedSubMenu.addItem(2, "1/32 D");
-		dottedSubMenu.addItem(3, "1/16 D");
-		dottedSubMenu.addItem(4, "1/8 D");
-		dottedSubMenu.addItem(5, "1/4 D");
-		dottedSubMenu.addItem(6, "1/2 D");
-		durationMenu.addSubMenu("Dotted", dottedSubMenu);
-
-		return durationMenu;
-	}
-
-	static void testcallback(int result, Slider* slider);
+	static void testcallback(int result, int blank);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NegativeDelayAudioProcessorEditor)
 };
