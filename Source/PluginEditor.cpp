@@ -17,7 +17,7 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 
 	setResizable(true,true);
 	// This is where our plugin’s editor size is set.
-	setSize(400, 400);
+	setSize(500, 500);
 	// these define the parameters of our slider object
 	negativeDelayTimeSlider_.setSliderStyle(Slider::LinearHorizontal);
 	//(double)NegativeDelayAudioProcessor::pluginLatency_
@@ -95,6 +95,12 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	durationButton_.addListener(this);
 	addAndMakeVisible(durationButton_);
 
+	durationSlider_.setSliderStyle(Slider::Rotary);
+	durationSlider_.setRange(1, numberOfNoteDurations_, 1);
+	//durationSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 90, durationSlider_.getTextBoxHeight());
+	durationSlider_.setValue(0.0);
+	addAndMakeVisible(durationSlider_);
+
 	startTimerHz(10);
 }
 
@@ -106,13 +112,11 @@ NegativeDelayAudioProcessorEditor::~NegativeDelayAudioProcessorEditor()
 //==============================================================================
 void NegativeDelayAudioProcessorEditor::durationMenuCallBack(int result, NegativeDelayAudioProcessorEditor* editor)//HashMap<int, String> * noteDurationIntHashMap)
 {
-
 		if (result != 0) {
 			String selectedDurationString = editor->noteDurations_[result - 1].label;
 			editor->durationButton_.setButtonText(selectedDurationString);
 			editor->noteDurationToMS(editor->noteDurations_[result - 1].factor);
 		}
-
 }
 
 void NegativeDelayAudioProcessorEditor::buttonClicked(Button* button)
@@ -201,6 +205,8 @@ void NegativeDelayAudioProcessorEditor::resized()
 	millisecondsSlider_.setBounds(40, 250, 300, 20);	
 
 	durationButton_.setBounds(40, 290, 300, 20);
+
+	durationSlider_.setBounds(40, 310, 200, 200);
 }
 
 void NegativeDelayAudioProcessorEditor::noteDurationToMS(double factor)

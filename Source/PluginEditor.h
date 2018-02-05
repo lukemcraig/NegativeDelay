@@ -60,8 +60,10 @@ private:
 		String label; // add T for triplets, D for Dotted
 		double factor; // 1 bar = 1.0; 1/2 note =0.5
 	};
-	struct NoteDuration noteDurations_[20];
+	static const int numberOfNoteDurations_ = 20;
+	struct NoteDuration noteDurations_[numberOfNoteDurations_];
 	PopupMenu durationMenu_;
+	Slider durationSlider_;
 
 	static void durationMenuCallBack(int result, NegativeDelayAudioProcessorEditor* editor);
 
