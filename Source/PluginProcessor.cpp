@@ -161,8 +161,8 @@ void NegativeDelayAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 	const int totalNumOutputChannels = getTotalNumOutputChannels();
 	const int numSamples = buffer.getNumSamples();
 
-	int dpr; // delay pointer read
-	int dpw; // delay pointer write
+	int dpr = 0; // delay pointer read
+	int dpw = 0; // delay pointer write
 
 	for (int channel = 0; channel < totalNumInputChannels; ++channel)
 	{

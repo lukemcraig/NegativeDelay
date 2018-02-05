@@ -87,7 +87,6 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	// add the listener to the slider
 	millisecondsSlider_.addListener(this);
 
-	initializeNoteDurationHashMap();
 
 	createDurationMenu();
 
@@ -109,9 +108,9 @@ void NegativeDelayAudioProcessorEditor::durationMenuCallBack(int result, Negativ
 {
 
 		if (result != 0) {
-			String selectedDurationString = editor->noteDurationIntHashMap_.operator[](result);
+			String selectedDurationString = editor->noteDurations_[result - 1].label;
 			editor->durationButton_.setButtonText(selectedDurationString);
-			editor->noteDurationToMS(selectedDurationString);
+			editor->noteDurationToMS(editor->noteDurations_[result - 1].factor);
 		}
 
 }
@@ -120,86 +119,56 @@ void NegativeDelayAudioProcessorEditor::buttonClicked(Button* button)
 {
 	if (button = &durationButton_) {
 		durationMenu_.showMenuAsync(PopupMenu::Options().withTargetComponent(&durationButton_),
-										ModalCallbackFunction::create(durationMenuCallBack, this));
+					ModalCallbackFunction::create(durationMenuCallBack, this));
 	}
 }
 
 void NegativeDelayAudioProcessorEditor::createDurationMenu()
 {
+	//struct NoteDuration sixty_fourth = {"1/64", 0.015625};
+	/*struct NoteDuration noteDurations[20];*/
+	//noteDurations[0] = { /*label*/ "1/64", /*factor*/ 0.015625 };
+
+	noteDurations_[0].label = "1/64";		noteDurations_[0].factor = 0.015625;
+	noteDurations_[1].label = "1/32";		noteDurations_[1].factor = 0.03125;
+	noteDurations_[2].label = "1/16";		noteDurations_[2].factor = 0.0625;
+	noteDurations_[3].label = "1/8";		noteDurations_[3].factor = 0.125;
+	noteDurations_[4].label = "1/4";		noteDurations_[4].factor = 0.25;
+	noteDurations_[5].label = "1/2";		noteDurations_[5].factor = 0.5;
+	noteDurations_[6].label = "1 Bar";		noteDurations_[6].factor = 1.0;
+
+	noteDurations_[7].label = "1/64 T";		noteDurations_[7].factor = 1.0 / 96.0;
+	noteDurations_[8].label = "1/32 T";		noteDurations_[8].factor = 1.0 / 48.0;
+	noteDurations_[9].label = "1/16 T";		noteDurations_[9].factor = 1.0 / 24.0;
+	noteDurations_[10].label = "1/8 T";		noteDurations_[10].factor = 1.0 / 12.0;
+	noteDurations_[11].label = "1/4 T";		noteDurations_[11].factor = 1.0 / 6.0;
+	noteDurations_[12].label = "1/2 T";		noteDurations_[12].factor = 1.0 / 3.0;
+	noteDurations_[13].label = "1 Bar T";	noteDurations_[13].factor = 2.0 / 3.0;
+
+	noteDurations_[14].label = "1/64 D";	noteDurations_[14].factor = 0.0234375;
+	noteDurations_[15].label = "1/32 D";	noteDurations_[15].factor = 0.046875;
+	noteDurations_[16].label = "1/16 D";	noteDurations_[16].factor = 0.09375;
+	noteDurations_[17].label = "1/8 D";		noteDurations_[17].factor = 0.1875;
+	noteDurations_[18].label = "1/4 D";		noteDurations_[18].factor = 0.375;
+	noteDurations_[19].label = "1/2 D";		noteDurations_[19].factor = 0.75;
+
 	PopupMenu straightSubMenu;
-	straightSubMenu.addItem(1, "1/64");
-	straightSubMenu.addItem(2, "1/32");
-	straightSubMenu.addItem(3, "1/16");
-	straightSubMenu.addItem(4, "1/8");
-	straightSubMenu.addItem(5, "1/4");
-	straightSubMenu.addItem(6, "1/2");
-	straightSubMenu.addItem(7, "1 Bar");
+	for (int i = 1; i < 8; i++) {
+		straightSubMenu.addItem(i, noteDurations_[i-1].label);
+	}
 	durationMenu_.addSubMenu("Straight", straightSubMenu);
 
 	PopupMenu tripletSubMenu;
-	tripletSubMenu.addItem(8, "1/64 T");
-	tripletSubMenu.addItem(9, "1/32 T");
-	tripletSubMenu.addItem(10, "1/16 T");
-	tripletSubMenu.addItem(11, "1/8 T");
-	tripletSubMenu.addItem(12, "1/4 T");
-	tripletSubMenu.addItem(13, "1/2 T");
-	tripletSubMenu.addItem(14, "1 Bar T");
+	for (int i = 8; i < 15; i++) {
+		tripletSubMenu.addItem(i, noteDurations_[i - 1].label);
+	}
 	durationMenu_.addSubMenu("Triplet", tripletSubMenu);
 
 	PopupMenu dottedSubMenu;
-	dottedSubMenu.addItem(15, "1/64 D");
-	dottedSubMenu.addItem(16, "1/32 D");
-	dottedSubMenu.addItem(17, "1/16 D");
-	dottedSubMenu.addItem(18, "1/8 D");
-	dottedSubMenu.addItem(19, "1/4 D");
-	dottedSubMenu.addItem(20, "1/2 D");
-	durationMenu_.addSubMenu("Dotted", dottedSubMenu);
-
-	
-}
-
-void NegativeDelayAudioProcessorEditor::initializeNoteDurationHashMap() {
-	noteDurationHashMap_.set("1/64 T", 1.0 / 96.0);
-	noteDurationHashMap_.set("1/64", 0.015625);
-	noteDurationHashMap_.set("1/64 D", 0.0234375);
-	noteDurationHashMap_.set("1/32 T", 1.0 / 48.0);
-	noteDurationHashMap_.set("1/32", 0.03125);
-	noteDurationHashMap_.set("1/32 D", 0.046875);
-	noteDurationHashMap_.set("1/16 T", 1.0/24.0);
-	noteDurationHashMap_.set("1/16", 0.0625);
-	noteDurationHashMap_.set("1/16 D", 0.09375);
-	noteDurationHashMap_.set("1/8 T", 1.0 /12.0);
-	noteDurationHashMap_.set("1/8", 0.125);
-	noteDurationHashMap_.set("1/8 D", 0.1875);
-	noteDurationHashMap_.set("1/4 T", 1.0 /6.0);
-	noteDurationHashMap_.set("1/4", 0.25);
-	noteDurationHashMap_.set("1/4 D", 0.375);
-	noteDurationHashMap_.set("1/2 T", 1.0 /3.0);
-	noteDurationHashMap_.set("1/2", 0.5);
-	noteDurationHashMap_.set("1/2 D", 0.75);
-	noteDurationHashMap_.set("1 Bar T", 2.0 /3.0);
-	noteDurationHashMap_.set("1 Bar", 1.0);
-
-	noteDurationIntHashMap_.set(1, "1/64");
-	noteDurationIntHashMap_.set(2, "1/32");
-	noteDurationIntHashMap_.set(3, "1/16");
-	noteDurationIntHashMap_.set(4, "1/8");
-	noteDurationIntHashMap_.set(5, "1/4");
-	noteDurationIntHashMap_.set(6, "1/2");
-	noteDurationIntHashMap_.set(7, "1 Bar");
-	noteDurationIntHashMap_.set(8, "1/64 T");
-	noteDurationIntHashMap_.set(9, "1/32 T");
-	noteDurationIntHashMap_.set(10, "1/16 T");
-	noteDurationIntHashMap_.set(11, "1/8 T");
-	noteDurationIntHashMap_.set(12, "1/4 T");
-	noteDurationIntHashMap_.set(13, "1/2 T");
-	noteDurationIntHashMap_.set(14, "1 Bar T");
-	noteDurationIntHashMap_.set(15, "1/64 D");
-	noteDurationIntHashMap_.set(16, "1/32 D");
-	noteDurationIntHashMap_.set(17, "1/16 D");
-	noteDurationIntHashMap_.set(18, "1/8 D");
-	noteDurationIntHashMap_.set(19, "1/4 D");
-	noteDurationIntHashMap_.set(20, "1/2 D");
+	for (int i = 15; i < 21; i++) {
+		dottedSubMenu.addItem(i, noteDurations_[i - 1].label);
+	}
+	durationMenu_.addSubMenu("Dotted", dottedSubMenu);	
 }
 
 void NegativeDelayAudioProcessorEditor::paint (Graphics& g)
@@ -234,11 +203,10 @@ void NegativeDelayAudioProcessorEditor::resized()
 	durationButton_.setBounds(40, 290, 300, 20);
 }
 
-void NegativeDelayAudioProcessorEditor::noteDurationToMS(juce::String &selectedText)
+void NegativeDelayAudioProcessorEditor::noteDurationToMS(double factor)
 {
 	double barInMS = 240000.0 / processor.lastPosInfo.bpm;
-	double selectedDuration = noteDurationHashMap_.operator[](selectedText);
-	double ms = selectedDuration * barInMS;
+	double ms = factor * barInMS;
 	millisecondsSlider_.setValue(ms);
 }
 

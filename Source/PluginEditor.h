@@ -37,9 +37,8 @@ private:
 
 	void buttonClicked(Button* button) override;
 	
-	void noteDurationToMS(juce::String &selectedText);
+	void noteDurationToMS(double factor);
 	void updateTimecodeDisplay(AudioPlayHead::CurrentPositionInfo);
-	void initializeNoteDurationHashMap();
 	void createDurationMenu();
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
@@ -56,10 +55,12 @@ private:
 	Slider millisecondsSlider_;
 	Label bpmLabel_;
 
-	HashMap<String, double> noteDurationHashMap_;
-	HashMap<int, String> noteDurationIntHashMap_;
 	TextButton durationButton_;
-
+	struct NoteDuration {
+		String label; // add T for triplets, D for Dotted
+		double factor; // 1 bar = 1.0; 1/2 note =0.5
+	};
+	struct NoteDuration noteDurations_[20];
 	PopupMenu durationMenu_;
 
 	static void durationMenuCallBack(int result, NegativeDelayAudioProcessorEditor* editor);
