@@ -56,14 +56,29 @@ private:
 	Label bpmLabel_;
 
 	TextButton durationButton_;
+
 	struct NoteDuration {
 		String label; // add T for triplets, D for Dotted
 		double factor; // 1 bar = 1.0; 1/2 note =0.5
 	};
 	static const int numberOfNoteDurations_ = 20;
 	struct NoteDuration noteDurations_[numberOfNoteDurations_];
+
+	int straightNoteIndexStart_;
+	int straightNoteIndexEnd_;
+
+	int tripletNoteIndexStart_;
+	int tripletNoteIndexEnd_;
+
+	int dottedNoteIndexStart_;
+	int dottedNoteIndexEnd_;
+
 	PopupMenu durationMenu_;
 	Slider durationSlider_;
+
+	TextButton straightNotesButton_;
+	TextButton tripletNotesButton_;
+	TextButton dottedNotesButton_;
 
 	static void durationMenuCallBack(int result, NegativeDelayAudioProcessorEditor* editor);
 

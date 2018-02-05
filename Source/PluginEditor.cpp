@@ -14,10 +14,9 @@
 NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDelayAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
-
 	setResizable(true,true);
 	// This is where our plugin’s editor size is set.
-	setSize(500, 500);
+	setSize(400, 600);
 	// these define the parameters of our slider object
 	negativeDelayTimeSlider_.setSliderStyle(Slider::LinearHorizontal);
 	//(double)NegativeDelayAudioProcessor::pluginLatency_
@@ -87,7 +86,6 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	// add the listener to the slider
 	millisecondsSlider_.addListener(this);
 
-
 	createDurationMenu();
 
 	durationButton_.setButtonText("Note Durations");
@@ -96,10 +94,26 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	addAndMakeVisible(durationButton_);
 
 	durationSlider_.setSliderStyle(Slider::Rotary);
-	durationSlider_.setRange(1, numberOfNoteDurations_, 1);
+	durationSlider_.setRange(straightNoteIndexStart_, straightNoteIndexEnd_, 1);
 	//durationSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 90, durationSlider_.getTextBoxHeight());
 	durationSlider_.setValue(0.0);
+	durationSlider_.addListener(this);
 	addAndMakeVisible(durationSlider_);
+
+	straightNotesButton_.setButtonText("Straight Notes");
+	straightNotesButton_.setTriggeredOnMouseDown(true);
+	straightNotesButton_.addListener(this);
+	addAndMakeVisible(straightNotesButton_);
+
+	tripletNotesButton_.setButtonText("Triplet Notes");
+	tripletNotesButton_.setTriggeredOnMouseDown(true);
+	tripletNotesButton_.addListener(this);
+	addAndMakeVisible(tripletNotesButton_);
+
+	dottedNotesButton_.setButtonText("Dotted Notes");
+	dottedNotesButton_.setTriggeredOnMouseDown(true);
+	dottedNotesButton_.addListener(this);
+	addAndMakeVisible(dottedNotesButton_);
 
 	startTimerHz(10);
 }
@@ -110,7 +124,7 @@ NegativeDelayAudioProcessorEditor::~NegativeDelayAudioProcessorEditor()
 }
 
 //==============================================================================
-void NegativeDelayAudioProcessorEditor::durationMenuCallBack(int result, NegativeDelayAudioProcessorEditor* editor)//HashMap<int, String> * noteDurationIntHashMap)
+void NegativeDelayAudioProcessorEditor::durationMenuCallBack(int result, NegativeDelayAudioProcessorEditor* editor)
 {
 		if (result != 0) {
 			String selectedDurationString = editor->noteDurations_[result - 1].label;
@@ -121,9 +135,21 @@ void NegativeDelayAudioProcessorEditor::durationMenuCallBack(int result, Negativ
 
 void NegativeDelayAudioProcessorEditor::buttonClicked(Button* button)
 {
-	if (button = &durationButton_) {
+	if (button == &durationButton_) {
 		durationMenu_.showMenuAsync(PopupMenu::Options().withTargetComponent(&durationButton_),
 					ModalCallbackFunction::create(durationMenuCallBack, this));
+	}
+
+	if (button == &straightNotesButton_) {
+		durationSlider_.setRange(straightNoteIndexStart_, straightNoteIndexEnd_, 1);
+	}
+
+	if (button == &tripletNotesButton_) {
+		durationSlider_.setRange(tripletNoteIndexStart_, tripletNoteIndexEnd_, 1);
+	}
+
+	if (button == &dottedNotesButton_) {
+		durationSlider_.setRange(dottedNoteIndexStart_, dottedNoteIndexEnd_, 1);
 	}
 }
 
@@ -133,6 +159,8 @@ void NegativeDelayAudioProcessorEditor::createDurationMenu()
 	/*struct NoteDuration noteDurations[20];*/
 	//noteDurations[0] = { /*label*/ "1/64", /*factor*/ 0.015625 };
 
+	straightNoteIndexStart_ = 0;
+
 	noteDurations_[0].label = "1/64";		noteDurations_[0].factor = 0.015625;
 	noteDurations_[1].label = "1/32";		noteDurations_[1].factor = 0.03125;
 	noteDurations_[2].label = "1/16";		noteDurations_[2].factor = 0.0625;
@@ -140,6 +168,9 @@ void NegativeDelayAudioProcessorEditor::createDurationMenu()
 	noteDurations_[4].label = "1/4";		noteDurations_[4].factor = 0.25;
 	noteDurations_[5].label = "1/2";		noteDurations_[5].factor = 0.5;
 	noteDurations_[6].label = "1 Bar";		noteDurations_[6].factor = 1.0;
+
+	straightNoteIndexEnd_ = 6;
+	tripletNoteIndexStart_ = 7;
 
 	noteDurations_[7].label = "1/64 T";		noteDurations_[7].factor = 1.0 / 96.0;
 	noteDurations_[8].label = "1/32 T";		noteDurations_[8].factor = 1.0 / 48.0;
@@ -149,12 +180,17 @@ void NegativeDelayAudioProcessorEditor::createDurationMenu()
 	noteDurations_[12].label = "1/2 T";		noteDurations_[12].factor = 1.0 / 3.0;
 	noteDurations_[13].label = "1 Bar T";	noteDurations_[13].factor = 2.0 / 3.0;
 
+	tripletNoteIndexEnd_ = 13;
+	dottedNoteIndexStart_ = 14;
+
 	noteDurations_[14].label = "1/64 D";	noteDurations_[14].factor = 0.0234375;
 	noteDurations_[15].label = "1/32 D";	noteDurations_[15].factor = 0.046875;
 	noteDurations_[16].label = "1/16 D";	noteDurations_[16].factor = 0.09375;
 	noteDurations_[17].label = "1/8 D";		noteDurations_[17].factor = 0.1875;
 	noteDurations_[18].label = "1/4 D";		noteDurations_[18].factor = 0.375;
 	noteDurations_[19].label = "1/2 D";		noteDurations_[19].factor = 0.75;
+
+	dottedNoteIndexEnd_ = 19;
 
 	PopupMenu straightSubMenu;
 	for (int i = 1; i < 8; i++) {
@@ -204,9 +240,13 @@ void NegativeDelayAudioProcessorEditor::resized()
 
 	millisecondsSlider_.setBounds(40, 250, 300, 20);	
 
-	durationButton_.setBounds(40, 290, 300, 20);
+	durationButton_.setBounds(40, 290, 200, 20);
 
 	durationSlider_.setBounds(40, 310, 200, 200);
+
+	straightNotesButton_.setBounds(40, 510, 100, 20);
+	tripletNotesButton_.setBounds(140, 510, 100, 20);
+	dottedNotesButton_.setBounds(240, 510, 100, 20);
 }
 
 void NegativeDelayAudioProcessorEditor::noteDurationToMS(double factor)
@@ -224,8 +264,13 @@ void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
 		delayTimeSlider_.setValue(processor.pluginLatency_-negativeDelayTimeSlider_.getValue());
 	if (slider == &millisecondsSlider_)
 		negativeDelayTimeSlider_.setValue(millisecondsSlider_.getValue() * processor.getSampleRate()/1000.0);
+	if (slider == &durationSlider_)
+		noteDurationToMS(noteDurations_[(int)durationSlider_.getValue()].factor);
+
 	millisecondsLabel_.setText("-"+String((negativeDelayTimeSlider_.getValue()/processor.getSampleRate()) * 1000)+" ms", dontSendNotification);
 }
+
+
 
 void NegativeDelayAudioProcessorEditor::timerCallback() {
 	delayReadPositionLabel_.setText("dpr: " + String(processor.delayReadPosition_), dontSendNotification);
