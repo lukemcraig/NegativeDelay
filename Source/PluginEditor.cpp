@@ -264,13 +264,14 @@ void NegativeDelayAudioProcessorEditor::sliderValueChanged(Slider * slider)
 		delayTimeSlider_.setValue(processor.pluginLatency_-negativeDelayTimeSlider_.getValue());
 	if (slider == &millisecondsSlider_)
 		negativeDelayTimeSlider_.setValue(millisecondsSlider_.getValue() * processor.getSampleRate()/1000.0);
-	if (slider == &durationSlider_)
-		noteDurationToMS(noteDurations_[(int)durationSlider_.getValue()].factor);
+	if (slider == &durationSlider_) {
+		NoteDuration nd = noteDurations_[(int)durationSlider_.getValue()];		
+		durationButton_.setButtonText(nd.label);
+		noteDurationToMS(nd.factor);
+	}
 
 	millisecondsLabel_.setText("-"+String((negativeDelayTimeSlider_.getValue()/processor.getSampleRate()) * 1000)+" ms", dontSendNotification);
 }
-
-
 
 void NegativeDelayAudioProcessorEditor::timerCallback() {
 	delayReadPositionLabel_.setText("dpr: " + String(processor.delayReadPosition_), dontSendNotification);
@@ -279,10 +280,10 @@ void NegativeDelayAudioProcessorEditor::timerCallback() {
 	delayWritePositionSlider_.setValue(processor.delayWritePosition_);
 	delayReadPositionSlider_.setValue(processor.delayReadPosition_);
 
-	updateTimecodeDisplay(processor.lastPosInfo);
+	updateBPMLabel(processor.lastPosInfo);
 }
 
-void NegativeDelayAudioProcessorEditor::updateTimecodeDisplay(AudioPlayHead::CurrentPositionInfo pos)
+void NegativeDelayAudioProcessorEditor::updateBPMLabel(AudioPlayHead::CurrentPositionInfo pos)
 {
 	bpmLabel_.setText(String(pos.bpm)+" bpm",dontSendNotification);
 }

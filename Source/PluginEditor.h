@@ -38,7 +38,7 @@ private:
 	void buttonClicked(Button* button) override;
 	
 	void noteDurationToMS(double factor);
-	void updateTimecodeDisplay(AudioPlayHead::CurrentPositionInfo);
+	void updateBPMLabel(AudioPlayHead::CurrentPositionInfo);
 	void createDurationMenu();
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
