@@ -66,9 +66,13 @@ public:
 
 	AudioPlayHead::CurrentPositionInfo lastPosInfo;
 
+	double sampleRate_;
+
 private:
 	void updateCurrentTimeInfoFromHost();
-
+	//==============================================================================
+	AudioParameterFloat* delayTimeParam_;
+	//==============================================================================
 	AudioSampleBuffer delayBuffer_;
 	int delayBufferLength_;
 	

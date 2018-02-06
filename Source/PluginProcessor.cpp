@@ -31,6 +31,13 @@ NegativeDelayAudioProcessor::NegativeDelayAudioProcessor()
 	delayTime_ = 0;
 
 	lastPosInfo.resetToDefault();
+	
+	addParameter(delayTimeParam_ = new AudioParameterFloat(
+		"delayTime", // parameter ID
+		"Delay Time", // parameter name
+		NormalisableRange<float>(0.0f, 1.0f),   // paramter value range
+		0.0f)); // default value
+
 }
 
 NegativeDelayAudioProcessor::~NegativeDelayAudioProcessor()
@@ -108,6 +115,9 @@ void NegativeDelayAudioProcessor::prepareToPlay (double sampleRate, int samplesP
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+	sampleRate_ = sampleRate;
+	float maxDelayMS = ((float)(pluginLatency_ / sampleRate)*1000.0f);
+	delayTimeParam_->range = NormalisableRange<float>(0.0f, maxDelayMS);
 	//delayBufferLength_ = (int)(2.0*sampleRate);
 	delayBufferLength_ = pluginLatency_+1;
 	if (delayBufferLength_ < 1)
@@ -192,7 +202,6 @@ void NegativeDelayAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 	for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
 		buffer.clear(i, 0, buffer.getNumSamples());
 	}
-
 	updateCurrentTimeInfoFromHost();
 }
 
