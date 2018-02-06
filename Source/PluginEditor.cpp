@@ -126,11 +126,29 @@ NegativeDelayAudioProcessorEditor::~NegativeDelayAudioProcessorEditor()
 //==============================================================================
 void NegativeDelayAudioProcessorEditor::durationMenuCallBack(int result, NegativeDelayAudioProcessorEditor* editor)
 {
-		if (result != 0) {
-			String selectedDurationString = editor->noteDurations_[result - 1].label;
-			editor->durationButton_.setButtonText(selectedDurationString);
-			editor->noteDurationToMS(editor->noteDurations_[result - 1].factor);
-		}
+	if (result != 0) {
+		String selectedDurationString = editor->noteDurations_[result - 1].label;
+		editor->durationButton_.setButtonText(selectedDurationString);
+		editor->noteDurationToMS(editor->noteDurations_[result - 1].factor);
+		editor->clampNoteDurationSliderAndSetIt(result-1);
+	}
+}
+
+void NegativeDelayAudioProcessorEditor::clampNoteDurationSliderAndSetIt(int newValue)
+{
+	if (newValue <= straightNoteIndexEnd_) {
+		durationSlider_.setRange(straightNoteIndexStart_, straightNoteIndexEnd_, 1);
+	}
+
+	else if (newValue <= tripletNoteIndexEnd_) {
+		durationSlider_.setRange(tripletNoteIndexStart_, tripletNoteIndexEnd_, 1);
+	}
+
+	else {
+		durationSlider_.setRange(dottedNoteIndexStart_, dottedNoteIndexEnd_, 1);
+	}
+
+	durationSlider_.setValue(newValue);
 }
 
 void NegativeDelayAudioProcessorEditor::buttonClicked(Button* button)
@@ -141,16 +159,22 @@ void NegativeDelayAudioProcessorEditor::buttonClicked(Button* button)
 	}
 
 	if (button == &straightNotesButton_) {
-		durationSlider_.setRange(straightNoteIndexStart_, straightNoteIndexEnd_, 1);
+		switchNoteDurationTypeOnSlider(straightNoteIndexStart_, straightNoteIndexEnd_);
 	}
 
 	if (button == &tripletNotesButton_) {
-		durationSlider_.setRange(tripletNoteIndexStart_, tripletNoteIndexEnd_, 1);
+		switchNoteDurationTypeOnSlider(tripletNoteIndexStart_, tripletNoteIndexEnd_);
 	}
 
 	if (button == &dottedNotesButton_) {
-		durationSlider_.setRange(dottedNoteIndexStart_, dottedNoteIndexEnd_, 1);
+		switchNoteDurationTypeOnSlider(dottedNoteIndexStart_, dottedNoteIndexEnd_);
 	}
+}
+
+void NegativeDelayAudioProcessorEditor::switchNoteDurationTypeOnSlider(int start, int end)
+{
+	double oldValueNorm = (durationSlider_.getValue() / durationSlider_.getMaximum());
+	clampNoteDurationSliderAndSetIt(start + (int)(oldValueNorm*(end - start)));
 }
 
 void NegativeDelayAudioProcessorEditor::createDurationMenu()

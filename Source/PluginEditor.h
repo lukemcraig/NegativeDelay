@@ -36,10 +36,13 @@ private:
 	void sliderValueChanged(Slider* slider) override;
 
 	void buttonClicked(Button* button) override;
+
+	void switchNoteDurationTypeOnSlider(int start, int end);
 	
 	void noteDurationToMS(double factor);
 	void updateBPMLabel(AudioPlayHead::CurrentPositionInfo);
 	void createDurationMenu();
+	void clampNoteDurationSliderAndSetIt(int newValue);
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     NegativeDelayAudioProcessor& processor;
