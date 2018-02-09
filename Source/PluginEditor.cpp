@@ -14,6 +14,8 @@
 NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDelayAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
+	const OwnedArray<AudioProcessorParameter>& parameters = processor.getParameters();
+
 	setResizable(true,true);
 	// This is where our plugin’s editor size is set.
 	setSize(400, 600);
@@ -79,7 +81,7 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 	millisecondsSlider_.setRange(0.0, (processor.pluginLatency_/processor.sampleRate_)*1000.0, 0.01);
 	millisecondsSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 90, millisecondsSlider_.getTextBoxHeight());
 	millisecondsSlider_.setTextValueSuffix(" ms");
-	millisecondsSlider_.setValue(0.0);
+	millisecondsSlider_.setValue(parameters.);
 
 	addAndMakeVisible(&millisecondsSlider_);
 
@@ -95,8 +97,8 @@ NegativeDelayAudioProcessorEditor::NegativeDelayAudioProcessorEditor (NegativeDe
 
 	durationSlider_.setSliderStyle(Slider::Rotary);
 	durationSlider_.setRange(straightNoteIndexStart_, straightNoteIndexEnd_, 1);
-	//durationSlider_.setTextBoxStyle(Slider::TextBoxLeft, false, 90, durationSlider_.getTextBoxHeight());
-	durationSlider_.setValue(0.0);
+	durationSlider_.setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
+	durationSlider_.setValue(0);
 	durationSlider_.addListener(this);
 	addAndMakeVisible(durationSlider_);
 
